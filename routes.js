@@ -39,6 +39,7 @@ module.exports = function(app) {
 	app.route('/sysadm/login').post(sysadm.login);
 	app.route('/sysadm/getmenuauth').post(sysadm.getmenuauth);
 	app.route('/sysadm/getuserfavs').post(sysadm.getuserfavs);
+	app.route('/sysadm/getallmenus').post(sysadm.getallmenus);
 	app.route('/sysadm/getmenuitems').post(sysadm.getmenuitems);
 	app.route('/sysadm/getsubmenu').post(sysadm.getsubmenu);
 	app.route('/sysadm/checkaccess').post(sysadm.checkaccess);
@@ -52,6 +53,7 @@ module.exports = function(app) {
 
 	app.route('/language').get(language.index);
 	app.route('/language/listall').post(language.listall);
+	app.route('/language/listalluser').post(language.listalluser);
 	app.route('/language/list').post(language.list);
 	app.route('/language/listcombo').post(language.listcombo);
 	app.route('/language/one').post(language.one);
@@ -104,14 +106,15 @@ module.exports = function(app) {
 	app.route('/useraccess/listcombo').post(useraccess.listcombo);
 	app.route('/useraccess/listall').post(useraccess.listall);	
 	app.route('/useraccess/one').post(useraccess.one);
-	app.route('/useraccess/profile').post(useraccess.profile);
 	app.route('/useraccess/save').post(useraccess.save);
+	app.route('/useraccess/saveprofile').post(useraccess.saveprofile);	
 	app.route('/useraccess/saveusergroup').post(useraccess.saveusergroup);
 	app.route('/useraccess/purge').post(useraccess.purge);
 	app.route('/useraccess/purgeusergroup').post(useraccess.purgeusergroup);	
 
 	app.route('/theme').get(theme.index);
 	app.route('/theme/listall').post(theme.listall);
+	app.route('/theme/listalluser').post(theme.listalluser);
 	app.route('/theme/list').post(theme.list);
 	app.route('/theme/listcombo').post(theme.listcombo);
 	app.route('/theme/one').post(theme.one);

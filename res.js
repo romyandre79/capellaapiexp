@@ -1,22 +1,11 @@
 'use strict';
 var log = require('./config/logger');
-exports.ok = function(values, res) {
+exports.sendmsg = function(iserror,values, res) {
   var data = {
-		'iserror':0,
+		'iserror':iserror,
     'msg':values,
-    'total':0,
-    'rows':null
   };
-  res.json(data);
-  res.end();
-};
-exports.error = function(values, res) {
-  var data = {
-		'iserror':1,
-    'msg':values,
-    'total':0,
-    'rows':null
-  };
+  log.info(data);
   res.json(data);
   res.end();
 };
@@ -27,7 +16,7 @@ exports.senddata = function(total,rows, res) {
 		'msg':'Success',
     'rows':rows
   };
-	log.error(data);
+  log.info(data);
   res.json(data);
   res.end();
 };

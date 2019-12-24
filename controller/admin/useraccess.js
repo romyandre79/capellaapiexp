@@ -210,27 +210,6 @@ exports.listcombo = async function(req, res) {
 	});
 };
 
-exports.profile = async function(req, res) {
-	var token = req.body.token;
-	helper.checkauthkey(token,function(error){
-		if (error != ''){
-			helper.getmessage(true,error,res);
-		} else {
-			var sqlq = sqlselect + sqlfrom + 
-			" where a.authkey = ?";
-			connection.query(sqlq,
-			[ token ], 
-			function (error, rows, fields){
-				if (error) {
-					helper.getmessage(true,error.message,res);
-				} else {
-					response.senddata(rows.length,rows,res);
-				}
-			});
-		}
-	});
-};
-
 exports.one = async function(req, res) {
 	var id = req.body.id,
 		token = req.body.token;
@@ -249,6 +228,54 @@ exports.one = async function(req, res) {
 					response.senddata(rows.length,rows,res);
 				}
 			});
+		}
+	});
+};
+
+exports.saveprofile = async function(req, res) {
+	var token = req.body.token,
+	useraccessid = req.body.useraccessid,
+	username = req.body.username,
+	realname = req.body.realname,
+	password = req.body.password,
+	email = req.body.email,
+	phoneno = req.body.phoneno,
+	languageid = req.body.languageid,
+	themeid = req.body.themeid,
+	datauser = req.body.datauser;
+	helper.checkauthkey(token,function(error){
+		if (error != '') {
+			helper.getmessage(true,error,res);
+		} else {
+			helper.validatedata([
+				[username,'emptyusername','required'],
+				[realname,'emptyrealname','required'],
+				[password,'emptypassword','required'],
+				[email,'emptyemail','required'],
+				[phoneno,'emptyphoneno','required'],
+				[languageid,'emptylanguage','required'],
+				[themeid,'emptytheme','required'],
+				],
+				function(error){
+					if (error != '') {
+						helper.getmessage(true,error,res);
+					} else {
+						if ((useraccessid == null) || (useraccessid == '')) {
+							useraccessid = -1;
+						}
+						let sql = 'call Modifuserprofile(?,?,?,?,?,?,?,?,?);';
+						connection.query(sql,
+						[ useraccessid, username, realname, password, email, phoneno, languageid, themeid, datauser ], 
+						function (error, rows, fields){
+							if (error) {
+								helper.getmessage(true,error.message,res);
+							} else {
+								helper.getmessage(false,'alreadysaved',res);
+							}
+						});
+					}
+				}
+			);
 		}
 	});
 };

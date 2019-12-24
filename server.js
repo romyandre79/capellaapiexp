@@ -13,7 +13,7 @@ var routes = require('./routes');
 routes(app);
 
 app.use(function(req, res, next) {
-	response.error('Your Request Doesn\'t exist',res);
+	response.sendmsg(1,'Your Request Doesn\'t exist',res);
 });
 
 app.listen(port);

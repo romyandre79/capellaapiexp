@@ -76,16 +76,16 @@ exports.serverinfo = async function(req,res){
 }
 
 exports.getcatalog = async function(req,res){
-    var catalogname = req.body.catalogname;
-    helper.getcatalog(catalogname,function(error){
-        response.ok(error,res);
+    var messages = req.body.messages;
+    helper.getcatalog(messages,function(error){
+        response.sendmsg(0,error,res);
     });
 }
 
 exports.getmessage = async function(req, res){
     var iserror = req.body.iserror,
-    catalogname = req.body.catalogname;
-    helper.getmessage(iserror,catalogname,res);
+    messages = req.body.messages;
+    helper.getmessage(iserror,messages,res);
 }
 
 exports.checkaccess = async function(req, res){
@@ -129,7 +129,7 @@ exports.getmenuauth = async function(req,res){
         if (error != '') {
             helper.getmessage(true,error,res);
         } else {
-            response.ok(value,res);
+            response.sendmsg(1,value,res);
         }  
     })
 }
@@ -148,6 +148,17 @@ exports.getuserfavs = async function(req,res){
 exports.getmenuitems = async function(req,res){
     var token = req.body.token;
     helper.getmenuitems(token,function(error,value){
+        if (error != '') {
+            helper.getmessage(true,error,res);
+        } else {
+            response.senddata(value.length,value,res);
+        }  
+    })
+}
+
+exports.getallmenus = async function(req,res){
+    var token = req.body.token;
+    helper.getallmenus(token,function(error,value){
         if (error != '') {
             helper.getmessage(true,error,res);
         } else {

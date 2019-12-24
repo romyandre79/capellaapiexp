@@ -7,7 +7,7 @@ var result = {
 	total:0,
 	rows:{}
 };
-var sqlselect = "SELECT a.*,b.menuname as parentname,c.modulename,b.description as parentdesc ";
+var sqlselect = "SELECT a.menuaccessid,a.menuname,a.description,a.menuurl,a.menuicon,a.parentid,a.moduleid,a.sortorder,a.menucode,a.menudep,a.isgen,a.recordstatus,a.createddate,b.menuname as parentname,c.modulename,b.description as parentdesc ";
 var sqlfrom =
     "FROM menuaccess a "+
     "left join menuaccess b on a.parentid = b.menuaccessid "+

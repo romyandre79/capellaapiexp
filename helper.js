@@ -53,9 +53,9 @@ exports.getmessage = function (iserror,catalogname, res) {
     this.getcatalog(catalogname, function(msg) {
         if(iserror == true){
             log.error(msg);
-            response.error(msg, res);
+            response.sendmsg(1,msg, res);
         } else {
-            response.ok(msg, res);
+            response.sendmsg(0,msg, res);
         }
     });
 }
@@ -242,6 +242,30 @@ exports.getmenuitems = function(token,callback) {
         });
 };
 
+exports.getallmenus = function(token,callback) {
+    var sql = "select distinct a.menuicon,a.menuname,a.menucode, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description "+
+    " from menuaccess a "+
+    " join groupmenu b on b.menuaccessid = a.menuaccessid "+
+    " join usergroup c on c.groupaccessid = b.groupaccessid "+
+    " join useraccess d on d.useraccessid = c.useraccessid "+
+    " where a.recordstatus = 1 and b.isread = 1 "+
+    " and d.authkey = ? "+
+    " order by a.sortorder ASC, a.description ASC ";
+    connection.query(sql,
+        [token],
+		function (error, rows, fields){
+			if(error){
+                callback(error.message,0);
+			} else {
+                if (rows == undefined) {
+                    callback('youarenotauthorized',0);
+                } else {
+                    callback('', rows);
+                }
+			}
+        });
+};
+
 exports.getsubmenu = function(token,parentid,callback) {
     var sql = "select distinct t.menuaccessid,t.menuname,getcatalogsys(t.menuname,c.languageid) as menulabel,t.description,t.menuurl,t.menuicon "+
     " from menuaccess t "+
@@ -266,7 +290,7 @@ exports.getsubmenu = function(token,parentid,callback) {
 };
 
 exports.checkaccess = function(token,menuname,menuaction,callback) {
-    var sql = "select "+menuaction+" as akses " +
+    var sql = "select "+menuaction+" as access " +
     " from useraccess a "+
 	" inner join usergroup b on b.useraccessid = a.useraccessid "+
 	" inner join groupmenu c on c.groupaccessid = b.groupaccessid "+

@@ -25,6 +25,21 @@ exports.index = async function(req, res){
 	res.send("Theme API Index");
 }
 
+exports.listalluser = async function(req, res) {
+	var sqlq = sqlselect + sqlfrom + ' where recordstatus = 1';
+	connection.query(sqlq,
+		'',
+		function (error, rows, fields){
+			if (error) {
+				helper.getmessage(true, error.message,res);
+			} else {
+				result['total'] = rows.length;
+				result['rows'] = rows;
+				response.senddata(result['total'],result.rows,res);
+			}
+	});	
+};
+
 exports.listall = async function(req, res) {
 	var token = req.body.token,
 		id = req.body.id,

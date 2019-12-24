@@ -2,6 +2,7 @@
 
 var response = require('../../res');
 var connection = require('../../config/db');
+var log = require('../../config/logger');
 var helper = require('../../helper');
 var result = {
 	total:0,
@@ -21,12 +22,26 @@ exports.index = async function(req, res){
 	res.send("Language API Index");
 }
 
+exports.listalluser = async function(req, res) {
+	var sqlq = sqlselect + sqlfrom + ' where recordstatus = 1';
+	connection.query(sqlq,
+		'',
+		function (error, rows, fields){
+			if (error) {
+				helper.getmessage(true, error.message,res);
+			} else {
+				result['total'] = rows.length;
+				result['rows'] = rows;
+				response.senddata(result['total'],result.rows,res);
+			}
+	});	
+};
+
 exports.listall = async function(req, res) {
 	var token = req.body.token,
 		id = req.body.id,
 		languageid = helper.getsearchtext(req.body.languageid,'','string'),
-		languagename = helper.getsearchtext(req.body.languagename,'','string'),
-		sort = req.body.sort;
+		languagename = helper.getsearchtext(req.body.languagename,'','string');
 	helper.checkauthkey(token,function(error){
 		if (error != ''){
 			helper.getmessage(true,error,res);
@@ -35,7 +50,7 @@ exports.listall = async function(req, res) {
 			if (id != '') {
 				sqlw = sqlw + " and languageid in ("+id+") ";
 			}
-			var sqlq = sqlselect + sqlfrom + sqlw + sqlorder + sort;
+			var sqlq = sqlselect + sqlfrom + sqlw + sqlorder + 'languageid asc';
 			connection.query(sqlq,
 				[languageid,languagename],
 				function (error, rows, fields){
@@ -56,8 +71,7 @@ exports.list = async function(req, res) {
         languageid = helper.getsearchtext(req.body.languageid,'','string'),
 		languagename = helper.getsearchtext(req.body.languagename,'','string'),
 		page = Number(helper.getsearchtext(req.body.page,'1','int')),
-		rowsn = Number(helper.getsearchtext(req.body.rows,'10','int')),
-		sort = req.body.sort;
+		rowsn = Number(helper.getsearchtext(req.body.rows,'10','int'));
 	helper.checkauthkey(token,function(error){
 		if (error != ''){
 			helper.getmessage(true,error,res);
@@ -78,7 +92,7 @@ exports.list = async function(req, res) {
 						offset = retoffset;
 						sqloffset = retsqloffset;
 					});
-					var sqlq = sqlselect + sqlfrom + sqlw + sqlorder + sort + sqloffset;	
+					var sqlq = sqlselect + sqlfrom + sqlw + sqlorder + ' languageid asc ' + sqloffset;	
 					wherearray.push(offset,rowsn);
 					connection.query(sqlq,
 						wherearray,

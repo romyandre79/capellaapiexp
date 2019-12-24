@@ -6,11 +6,7 @@ var con = mysql.createPool({
   port: 3306,
   user: "root",
   password: "",
-  database: "capellafive"
+  database: "capella6"
 });
-/*
-con.connect(function (err){
-    if(err) log.error(err);
-});
-*/
+
 module.exports = con;
