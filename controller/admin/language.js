@@ -2,7 +2,6 @@
 
 var response = require('../../res');
 var connection = require('../../config/db');
-var log = require('../../config/logger');
 var helper = require('../../helper');
 var result = {
 	total:0,

@@ -243,11 +243,22 @@ exports.saveprofile = async function(req, res) {
 	languageid = req.body.languageid,
 	themeid = req.body.themeid,
 	datauser = req.body.datauser;
+	log.info(req.body);
 	helper.checkauthkey(token,function(error){
 		if (error != '') {
 			helper.getmessage(true,error,res);
 		} else {
-			helper.validatedata([
+			var sql = 'call Modifuserprofile(?,?,?,?,?,?,?,?,?);';
+			connection.query(sql,
+				[useraccessid, username, realname, password, email, phoneno, languageid, themeid, datauser],
+				function (error, rows, fields) {
+					if (error) {
+						helper.getmessage(true, error.message, res);
+					} else {
+						helper.getmessage(false, 'alreadysaved', res);
+					}
+				});
+			/*helper.validatedata([
 				[username,'emptyusername','required'],
 				[realname,'emptyrealname','required'],
 				[password,'emptypassword','required'],
@@ -263,19 +274,10 @@ exports.saveprofile = async function(req, res) {
 						if ((useraccessid == null) || (useraccessid == '')) {
 							useraccessid = -1;
 						}
-						let sql = 'call Modifuserprofile(?,?,?,?,?,?,?,?,?);';
-						connection.query(sql,
-						[ useraccessid, username, realname, password, email, phoneno, languageid, themeid, datauser ], 
-						function (error, rows, fields){
-							if (error) {
-								helper.getmessage(true,error.message,res);
-							} else {
-								helper.getmessage(false,'alreadysaved',res);
-							}
-						});
+						
 					}
 				}
-			);
+			);*/
 		}
 	});
 };

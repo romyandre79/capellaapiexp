@@ -1,14 +1,14 @@
 'use strict';
 
-var connection = require('./config/db');
-var log = require('./config/logger');
-var response = require('./res');
-var helper = require('./helper');
-var languageid = 1;
+let connection = require('./config/db');
+let response = require('./res');
+let helper = require('./helper');
+let log = require('./config/logger');
+let languageid = 1;
 
 exports.gettimeconvert = function (num)
 { 
-    var n = new Date(num);
+    let n = new Date(num);
     return n.getHours() + ' hr ' + n.getMinutes() + ' min ' + n.getSeconds() + ' sec ';
 }
 
@@ -31,7 +31,7 @@ exports.getcatalog = function(catalogname,callback) {
     catalogname = catalogname.replace(/ER_CANT_UPDATE_USED_TABLE_IN_SF_OR_TRG: /g,'');
     catalogname = catalogname.replace(/ER_BAD_FIELD_ERROR: /g,'');
     catalogname = catalogname.replace(/ER_BAD_NULL_ERROR: /g,'');
-    var sql = "select catalogval as katalog "+
+    let sql = "select catalogval as katalog "+
     " from catalogsys a "+
     " where catalogname = ? and languageid = "+languageid;
     connection.query(sql,
@@ -61,8 +61,8 @@ exports.getmessage = function (iserror,catalogname, res) {
 }
 
 exports.getoffset = function(page,rows,callback){
-    var offset = 0;
-    var sqloffset = ' limit ?,? ';
+    let offset = 0;
+    let sqloffset = ' limit ?,? ';
     if (Number(rows) != 0) {
         offset = (Number(page)-1) * Number(rows);
         sqloffset = " limit ?,? ";
@@ -71,7 +71,7 @@ exports.getoffset = function(page,rows,callback){
 };
 
 exports.checkauthkey = function(token,callback) {
-    var sql = "select ifnull(count(1),0) as jumlah "+
+    let sql = "select ifnull(count(1),0) as jumlah "+
         " from useraccess "+
         " where authkey = ? ";
     connection.query(sql,
@@ -91,12 +91,12 @@ exports.checkauthkey = function(token,callback) {
 };
 
 exports.validatedata = function(data,callback) {
-    var msg = '';
+    let msg = '';
     data.forEach(function(item) {
-        var iterator = item.values();
-        var valuesource = iterator.next().value;
-        var valueerror = iterator.next().value;
-        var valuetype = iterator.next().value;
+        let iterator = item.values();
+        let valuesource = iterator.next().value;
+        let valueerror = iterator.next().value;
+        let valuetype = iterator.next().value;
         if (valuetype == 'required') {
             if ((valuesource == '') || (valuesource == undefined)) {
                 msg = valueerror;
@@ -113,13 +113,17 @@ exports.validatedata = function(data,callback) {
             }
         }
     });
-    helper.getcatalog(msg,function(error){
-        callback(error);
-    });
+    if (msg != '') {
+        helper.getcatalog(msg,function(error){
+            callback(error);
+        });
+    } else {
+        callback(msg);
+    }
 }
 
 exports.checkdoc = function(wfname,res) {
-    var sql = "select getwfmaxstatbywfname(?) as maxstat";
+    let sql = "select getwfmaxstatbywfname(?) as maxstat";
     connection.query(sql,
         [wfname],
 		function (error, rows, fields){
@@ -136,7 +140,7 @@ exports.checkdoc = function(wfname,res) {
 };
 
 exports.getmenuauth = function(token,menuobject,callback) {
-    var sql = "select ifnull(count(1),0) as gmauth "+
+    let sql = "select ifnull(count(1),0) as gmauth "+
     " from groupmenuauth gm "+
     " inner join menuauth ma on ma.menuauthid = gm.menuauthid "+
     " inner join usergroup ug on ug.groupaccessid = gm.groupaccessid "+
@@ -159,7 +163,7 @@ exports.getmenuauth = function(token,menuobject,callback) {
 };
 
 exports.login = function(username,password,callback) {
-    var sql = 'select gettoken(?,md5(?)) as authkey ';
+    let sql = 'select gettoken(?,md5(?)) as authkey ';
     connection.query(sql,
         [username,password],
 		function (error, rows, fields){
@@ -198,7 +202,7 @@ exports.login = function(username,password,callback) {
 };
 
 exports.getuserfavs = function(token,callback) {
-    var sql = "select distinct b.menuaccessid,b.menuname,getcatalogsys(b.menuname,c.languageid) as menulabel,b.description,b.menuurl,b.menuicon "+
+    let sql = "select distinct b.menuaccessid,b.menuname,getcatalogsys(b.menuname,c.languageid) as menulabel,b.description,b.menuurl,b.menuicon "+
     " from userfav a "+
     " join menuaccess b on b.menuaccessid = a.menuaccessid "+
     " join useraccess c on c.useraccessid = a.useraccessid "+
@@ -219,7 +223,7 @@ exports.getuserfavs = function(token,callback) {
 };
 
 exports.getmenuitems = function(token,callback) {
-    var sql = "select distinct a.menuicon,a.menuname, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description "+
+    let sql = "select distinct a.menuicon,a.menuname, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description "+
     " from menuaccess a "+
     " join groupmenu b on b.menuaccessid = a.menuaccessid "+
     " join usergroup c on c.groupaccessid = b.groupaccessid "+
@@ -243,7 +247,7 @@ exports.getmenuitems = function(token,callback) {
 };
 
 exports.getallmenus = function(token,callback) {
-    var sql = "select distinct a.menuicon,a.menuname,a.menucode, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description "+
+    let sql = "select distinct a.menuicon,a.menuname,a.menucode, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description "+
     " from menuaccess a "+
     " join groupmenu b on b.menuaccessid = a.menuaccessid "+
     " join usergroup c on c.groupaccessid = b.groupaccessid "+
@@ -267,7 +271,7 @@ exports.getallmenus = function(token,callback) {
 };
 
 exports.getsubmenu = function(token,parentid,callback) {
-    var sql = "select distinct t.menuaccessid,t.menuname,getcatalogsys(t.menuname,c.languageid) as menulabel,t.description,t.menuurl,t.menuicon "+
+    let sql = "select distinct t.menuaccessid,t.menuname,getcatalogsys(t.menuname,c.languageid) as menulabel,t.description,t.menuurl,t.menuicon "+
     " from menuaccess t "+
     " inner join groupmenu a on a.menuaccessid = t.menuaccessid "+
     " inner join usergroup b on b.groupaccessid = a.groupaccessid "+
@@ -290,7 +294,7 @@ exports.getsubmenu = function(token,parentid,callback) {
 };
 
 exports.checkaccess = function(token,menuname,menuaction,callback) {
-    var sql = "select "+menuaction+" as access " +
+    let sql = "select "+menuaction+" as access " +
     " from useraccess a "+
 	" inner join usergroup b on b.useraccessid = a.useraccessid "+
 	" inner join groupmenu c on c.groupaccessid = b.groupaccessid "+
@@ -316,7 +320,7 @@ exports.gethistorydata = function(token,menuname,tableid,callback) {
         if (error != '') {
             callback(error,value);
         } else {
-            var sql = "select t.* " +
+            let sql = "select t.* " +
             " from translog t "+
             " where (coalesce(menuname,'') = ?) "+
             " and (coalesce(tableid,'') = ?) ";
@@ -338,7 +342,7 @@ exports.gethistorydata = function(token,menuname,tableid,callback) {
 };
 
 exports.getdashboard = function(token,callback) {
-    var sql = "select distinct d.widgetname,d.widgettitle,d.widgeturl,a.dashgroup,a.webformat,a.position, ( "+
+    let sql = "select distinct d.widgetname,d.widgettitle,d.widgeturl,a.dashgroup,a.webformat,a.position, ( "+
         " select count(1) "+
         " from userdash d0 "+
         " where d0.dashgroup = a.dashgroup and d0.menuaccessid = a.menuaccessid and d0.groupaccessid = b.groupaccessid "+
@@ -366,7 +370,7 @@ exports.getdashboard = function(token,callback) {
 };
 
 exports.getuserobjectvalues = function(token,menuobject,callback) {
-    var sql = "select distinct a.menuvalueid "+
+    let sql = "select distinct a.menuvalueid "+
     " from groupmenuauth a "+
     " inner join menuauth b on b.menuauthid = a.menuauthid "+
     " inner join usergroup c on c.groupaccessid = a.groupaccessid "+
@@ -386,7 +390,7 @@ exports.getuserobjectvalues = function(token,menuobject,callback) {
                 } else {
                     if (rows.length > 0) {
                         //callback('', rows);
-                        var cid = '';
+                        let cid = '';
                         rows.forEach(function(item,index,array){
                             if (cid == '') {
                                 cid = item['menuvalueid'];
@@ -405,24 +409,24 @@ exports.getuserobjectvalues = function(token,menuobject,callback) {
 };
 
 exports.getusertodo = function(token,page,rows,sort,order,res) {
-    var plantid = null;
+    let plantid = null;
     helper.getuserobjectvalues(token,'plant',function(error,value){
         if (error != ''){
             helper.getmessage(true,error,res);
         } else {
             plantid = value;
-            var sqlcount = " select count(1) as total ";
-            var sqlselect = "select distinct a.usertodoid,a.tododate,a.menuname,a.docno,a.description ";
-            var wherearray = [plantid,token];
-            var sqlfrom = 
+            let sqlcount = " select count(1) as total ";
+            let sqlselect = "select distinct a.usertodoid,a.tododate,a.menuname,a.docno,a.description ";
+            let wherearray = [plantid,token];
+            let sqlfrom = 
             " from usertodo a "+
             " inner join useraccess b on b.useraccessid = a.useraccessid "+
             " where plantid = ? "+
             " and isread = 0 "+
             " and b.authkey = ? ";
-            var sqlorder = " order by ? ? ";
-            var sqlqcount = sqlcount + sqlfrom;
-            var result = {
+            let sqlorder = " order by ? ? ";
+            let sqlqcount = sqlcount + sqlfrom;
+            let result = {
                 total:0,
                 rows:{}
             };
@@ -434,14 +438,14 @@ exports.getusertodo = function(token,page,rows,sort,order,res) {
 					}
 					result['total'] = rows[0].total;
                 });
-            var offset = '';
-            var sqloffset = '';
+            let offset = '';
+            let sqloffset = '';
             helper.getoffset(page,rows,function(retoffset,retsqloffset){
                 offset = retoffset;
                 sqloffset = retsqloffset;
             });
             wherearray.push(sort,order,offset,rows);
-            var sqlq = sqlselect + sqlfrom + sqlorder + sqloffset;
+            let sqlq = sqlselect + sqlfrom + sqlorder + sqloffset;
             connection.query(sqlq,
                 wherearray,
                 function (error, rows, fields){
@@ -461,7 +465,7 @@ exports.getusertodo = function(token,page,rows,sort,order,res) {
 };
 
 exports.findstatusbyuser = function(token,wfname,callback) {
-    var sql = "select b.wfbefstat "+
+    let sql = "select b.wfbefstat "+
     " from workflow a "+
     " inner join wfgroup b on b.workflowid = a.workflowid "+
     " inner join groupaccess c on c.groupaccessid = b.groupaccessid "+
@@ -489,7 +493,7 @@ exports.findstatusbyuser = function(token,wfname,callback) {
 };
 
 exports.getuserobjectwfvalues = function(token,menuobject,workflow,callback) {
-    var sql = "select distinct a.menuvalueid "+
+    let sql = "select distinct a.menuvalueid "+
     " from groupmenuauth a "+
     " inner join menuauth b on b.menuauthid = a.menuauthid "+
     " inner join usergroup c on c.groupaccessid = a.groupaccessid "+ 
@@ -514,7 +518,7 @@ exports.getuserobjectwfvalues = function(token,menuobject,workflow,callback) {
                     callback('youarenotauthorized',0);
                 } else {
                     if (rows.length > 0) {
-                        var cid = '';
+                        let cid = '';
                         rows.forEach(function(item,index,array){
                             if (cid == '') {
                                 cid = item['menuvalueid'];
@@ -533,7 +537,7 @@ exports.getuserobjectwfvalues = function(token,menuobject,workflow,callback) {
 };
 
 exports.findstatusname = function(token,wfname,recordstatus,callback) {
-    var sql = "select wfstatusname "+
+    let sql = "select wfstatusname "+
     " from wfstatus a "+
     " inner join workflow b on b.workflowid = a.workflowid "+
     " where b.wfname = ? and a.wfstat = ? ";
