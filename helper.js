@@ -223,7 +223,7 @@ exports.getuserfavs = function(token,callback) {
 };
 
 exports.getmenuitems = function(token,callback) {
-    let sql = "select distinct a.menuicon,a.menuname, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description "+
+    let sql = "select distinct a.menuicon,a.menuname, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description,b.isread,b.iswrite,b.ispost,b.isreject,b.isupload,b.isdownload "+
     " from menuaccess a "+
     " join groupmenu b on b.menuaccessid = a.menuaccessid "+
     " join usergroup c on c.groupaccessid = b.groupaccessid "+
@@ -247,7 +247,7 @@ exports.getmenuitems = function(token,callback) {
 };
 
 exports.getallmenus = function(token,callback) {
-    let sql = "select distinct a.menuicon,a.menuname,a.menucode, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description "+
+    let sql = "select distinct a.menuicon,a.menuname,a.menucode, getcatalogsys(a.menuname,d.languageid) as menulabel, a.menuaccessid, a.description, a.menuurl,a.parentid,a.sortorder,a.description,b.isread,b.iswrite,b.ispost,b.isreject,b.isupload,b.isdownload "+
     " from menuaccess a "+
     " join groupmenu b on b.menuaccessid = a.menuaccessid "+
     " join usergroup c on c.groupaccessid = b.groupaccessid "+

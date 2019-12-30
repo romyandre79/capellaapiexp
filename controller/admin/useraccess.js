@@ -258,26 +258,6 @@ exports.saveprofile = async function(req, res) {
 						helper.getmessage(false, 'alreadysaved', res);
 					}
 				});
-			/*helper.validatedata([
-				[username,'emptyusername','required'],
-				[realname,'emptyrealname','required'],
-				[password,'emptypassword','required'],
-				[email,'emptyemail','required'],
-				[phoneno,'emptyphoneno','required'],
-				[languageid,'emptylanguage','required'],
-				[themeid,'emptytheme','required'],
-				],
-				function(error){
-					if (error != '') {
-						helper.getmessage(true,error,res);
-					} else {
-						if ((useraccessid == null) || (useraccessid == '')) {
-							useraccessid = -1;
-						}
-						
-					}
-				}
-			);*/
 		}
 	});
 };
